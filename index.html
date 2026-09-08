@@ -34,60 +34,54 @@
     </div>
 
     <script>
-        // ★ステップ1で取得したGASのWebアプリURLに差し替えてください
+        // ★取得したGASのWebアプリURL（https://script.google.com/macros/s/.../exec）を貼ってください
         const GAS_WEB_APP_URL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec";
 
-        // ★GitHubにアップロードした画像ファイル名の一覧
-        // ※拡張子（.jpgや.png）やカッコ・スペースがGitHub上のファイル名と完全一致しているか確認してください
+        // ★GitHubにアップロードした画像ファイル名一覧（各種類・色につき (1) 〜 (5)）
         const imageList = [
-            // ブラウス (blouse)
-            "blouse_red (1).jpg",
-            "blouse_blue (1).jpg",
-            "blouse_black (1).jpg",
-            "blouse_white (1).jpg",
+            // --- ブラウス (blouse) ---
+            "blouse_red (1).jpg", "blouse_red (2).jpg", "blouse_red (3).jpg", "blouse_red (4).jpg", "blouse_red (5).jpg",
+            "blouse_blue (1).jpg", "blouse_blue (2).jpg", "blouse_blue (3).jpg", "blouse_blue (4).jpg", "blouse_blue (5).jpg",
+            "blouse_black (1).jpg", "blouse_black (2).jpg", "blouse_black (3).jpg", "blouse_black (4).jpg", "blouse_black (5).jpg",
+            "blouse_white (1).jpg", "blouse_white (2).jpg", "blouse_white (3).jpg", "blouse_white (4).jpg", "blouse_white (5).jpg",
 
-            // ドレス (dress)
-            "dress_red (1).jpg",
-            "dress_blue (1).jpg",
-            "dress_black (1).jpg",
-            "dress_white (1).jpg",
+            // --- ドレス (dress) ---
+            "dress_red (1).jpg", "dress_red (2).jpg", "dress_red (3).jpg", "dress_red (4).jpg", "dress_red (5).jpg",
+            "dress_blue (1).jpg", "dress_blue (2).jpg", "dress_blue (3).jpg", "dress_blue (4).jpg", "dress_blue (5).jpg",
+            "dress_black (1).jpg", "dress_black (2).jpg", "dress_black (3).jpg", "dress_black (4).jpg", "dress_black (5).jpg",
+            "dress_white (1).jpg", "dress_white (2).jpg", "dress_white (3).jpg", "dress_white (4).jpg", "dress_white (5).jpg",
 
-            // ジャケット (jacket)
-            "jacket_red (1).jpg",
-            "jacket_blue (1).jpg",
-            "jacket_black (1).jpg",
-            "jacket_white (1).jpg",
+            // --- ジャケット (jacket) ---
+            "jacket_red (1).jpg", "jacket_red (2).jpg", "jacket_red (3).jpg", "jacket_red (4).jpg", "jacket_red (5).jpg",
+            "jacket_blue (1).jpg", "jacket_blue (2).jpg", "jacket_blue (3).jpg", "jacket_blue (4).jpg", "jacket_blue (5).jpg",
+            "jacket_black (1).jpg", "jacket_black (2).jpg", "jacket_black (3).jpg", "jacket_black (4).jpg", "jacket_black (5).jpg",
+            "jacket_white (1).jpg", "jacket_white (2).jpg", "jacket_white (3).jpg", "jacket_white (4).jpg", "jacket_white (5).jpg",
 
-            // セーター (sweater)
-            "sweater_red (1).jpg",
-            "sweater_blue (1).jpg",
-            "sweater_black (1).jpg",
-            "sweater_white (1).jpg"
+            // --- セーター (sweater) ---
+            "sweater_red (1).jpg", "sweater_red (2).jpg", "sweater_red (3).jpg", "sweater_red (4).jpg", "sweater_red (5).jpg",
+            "sweater_blue (1).jpg", "sweater_blue (2).jpg", "sweater_blue (3).jpg", "sweater_blue (4).jpg", "sweater_blue (5).jpg",
+            "sweater_black (1).jpg", "sweater_black (2).jpg", "sweater_black (3).jpg", "sweater_black (4).jpg", "sweater_black (5).jpg",
+            "sweater_white (1).jpg", "sweater_white (2).jpg", "sweater_white (3).jpg", "sweater_white (4).jpg", "sweater_white (5).jpg"
         ];
 
-        // 評価基準（属性）のリスト
+        // 評価基準（表示させたい質問文）
         const criteriaList = ["おしゃれな", "フォーマルな", "スタイリッシュな", "好みな"];
 
         let currentLeft = "";
         let currentRight = "";
         let currentCriterion = "";
-        
-        // 回答者を識別するランダムID（セッションID）
         let respondentId = "R_" + Math.floor(Math.random() * 899999 + 100000);
 
-        // 2枚をランダムに選出して表示する関数
         function nextPair() {
             if (imageList.length < 2) {
                 alert("画像リストには少なくとも2枚以上の画像を設定してください。");
                 return;
             }
 
-            // ランダムに並び替えて先頭2枚を取得
+            // ランダムに並び替えて2枚選択
             let shuffled = [...imageList].sort(() => 0.5 - Math.random());
             currentLeft = shuffled[0];
             currentRight = shuffled[1];
-            
-            // 評価基準をランダム選択
             currentCriterion = criteriaList[Math.floor(Math.random() * criteriaList.length)];
 
             document.getElementById("imgLeft").src = currentLeft;
@@ -95,7 +89,6 @@
             document.getElementById("criterionText").innerText = `「${currentCriterion}」`;
         }
 
-        // 画像選択時の処理（スプレッドシートへ送信）
         function selectImage(winnerSide) {
             const winnerImg = winnerSide === 'left' ? currentLeft : currentRight;
             const loserImg = winnerSide === 'left' ? currentRight : currentLeft;
@@ -107,19 +100,19 @@
                 loser_img: loserImg
             };
 
-            // GASへバックグラウンド送信（CORSエラーを回避するため no-cors モード）
+            // GASへデータ送信
             fetch(GAS_WEB_APP_URL, {
                 method: "POST",
                 mode: "no-cors",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
-            }).catch(err => console.error("Data send error:", err));
+            }).catch(err => console.error("データ送信エラー:", err));
 
-            // 即座に次の比較ペアを表示
+            // 次のペアを表示
             nextPair();
         }
 
-        // ページ読み込み時に最初のペアを表示
+        // 初期化
         nextPair();
     </script>
 </body>
